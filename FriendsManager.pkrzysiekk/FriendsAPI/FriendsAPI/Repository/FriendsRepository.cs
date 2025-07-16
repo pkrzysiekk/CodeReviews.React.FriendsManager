@@ -12,7 +12,7 @@ public class FriendsRepository : IRepository<Friend>
     {
         _context = context;
     }
-    
+
     public IQueryable<Friend> GetAll()
     {
         return _context
@@ -22,8 +22,8 @@ public class FriendsRepository : IRepository<Friend>
     }
 
     public async Task<Friend?> GetById(int id)
-    { 
-        var friend= await _context
+    {
+        var friend = await _context
             .Friends
             .Include(c => c.Category)
             .FirstOrDefaultAsync(c => c.Id == id);
@@ -39,16 +39,15 @@ public class FriendsRepository : IRepository<Friend>
     public async Task Update(Friend entity)
     {
         var friend = await GetById(entity.Id);
-        if (friend != null)
-        {
-            friend.Name = entity.Name;
-            friend.Category= entity.Category;
-            friend.DesiredContactFrequency = entity.DesiredContactFrequency;
-            friend.LastContactDate = entity.LastContactDate;
-            friend.LastContactType = entity.LastContactType;
-            
-            await SaveChanges();
-        }
+        if (friend == null)
+            return;
+        friend.Name = entity.Name;
+        friend.Category = entity.Category;
+        friend.DesiredContactFrequency = entity.DesiredContactFrequency;
+        friend.LastContactDate = entity.LastContactDate;
+        friend.LastContactType = entity.LastContactType;
+
+        await SaveChanges();
     }
 
     public async Task Delete(int id)
