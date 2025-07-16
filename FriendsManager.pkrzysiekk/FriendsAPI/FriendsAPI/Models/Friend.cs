@@ -7,4 +7,6 @@ public class Friend
     public DateTime LastContactDate { get; set; }
     public string LastContactType {get; set;}
     public string DesiredContactFrequency {get; set;}
+    
+    public Category Category {get; set;}
 }
