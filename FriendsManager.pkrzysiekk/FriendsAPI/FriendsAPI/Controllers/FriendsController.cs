@@ -70,6 +70,7 @@ public class FriendsController : ControllerBase
         {
             return BadRequest();
         }
+
         return Ok();
     }
 }
