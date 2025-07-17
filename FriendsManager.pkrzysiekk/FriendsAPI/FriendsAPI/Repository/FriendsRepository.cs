@@ -41,8 +41,10 @@ public class FriendsRepository : IRepository<Friend>
         var friend = await GetById(entity.Id);
         if (friend == null)
             return;
+        if (!await isCategoryExist(friend.Category.Id))
+            return;
         friend.Name = entity.Name;
-        friend.Category = entity.Category;
+        friend.CategoryId = entity.CategoryId;
         friend.DesiredContactFrequency = entity.DesiredContactFrequency;
         friend.LastContactDate = entity.LastContactDate;
         friend.LastContactType = entity.LastContactType;
@@ -63,5 +65,10 @@ public class FriendsRepository : IRepository<Friend>
     public async Task SaveChanges()
     {
         await _context.SaveChangesAsync();
+    }
+
+    private async Task<bool> isCategoryExist(int categoryId)
+    {
+        return await _context.Categories.AnyAsync(c => c.Id == categoryId);
     }
 }

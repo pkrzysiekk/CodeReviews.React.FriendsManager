@@ -30,6 +30,11 @@ public class CategoryService : IService<Category>
 
     public async Task AddEntity(Category category)
     {
+        var entity = _repository.GetAll().FirstOrDefault(x => x.Name== category.Name);
+        if (entity != null)
+        {
+            throw new Exception("Category already exists");
+        }
         await _repository.Create(category);
     }
 

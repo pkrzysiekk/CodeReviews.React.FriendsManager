@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace FriendsAPI.Models;
 
 public class Friend
@@ -9,5 +11,6 @@ public class Friend
     public string LastContactType {get; set;}
     public string DesiredContactFrequency {get; set;}
     
-    public Category Category {get; set;}
+    [JsonIgnore]
+    public Category? Category {get; set;}
 }

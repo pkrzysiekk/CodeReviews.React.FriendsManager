@@ -36,6 +36,7 @@ public class FriendService :IService<Friend>
         var category = await _categoryRepository.GetById(entity.CategoryId);
         if (category == null)
             throw new Exception("Category not found");
+        entity.Category = category;
         await _repository.Create(entity);
         
     }
