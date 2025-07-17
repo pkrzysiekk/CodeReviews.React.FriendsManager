@@ -7,10 +7,12 @@ namespace FriendsAPI.Service;
 public class FriendService :IService<Friend>
 {
     private readonly IRepository<Friend> _repository;
+    private readonly IRepository<Category> _categoryRepository;
 
-    public FriendService(IRepository<Friend> repository)
+    public FriendService(IRepository<Friend> repository, IRepository<Category> categoryRepository)
     {
         _repository = repository;
+        _categoryRepository = categoryRepository;
     }
 
     public async Task<IEnumerable<Friend>> GetPagedEntities(int pageNumber, int pageSize)
@@ -31,7 +33,11 @@ public class FriendService :IService<Friend>
 
     public async Task AddEntity(Friend entity)
     {
+        var category = await _categoryRepository.GetById(entity.CategoryId);
+        if (category == null)
+            throw new Exception("Category not found");
         await _repository.Create(entity);
+        
     }
 
     public async Task UpdateEntity(Friend entity)

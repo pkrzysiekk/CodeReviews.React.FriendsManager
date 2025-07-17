@@ -3,7 +3,8 @@ using FriendsAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FriendsAPI.Controllers;
-
+[ApiController]
+[Route("[controller]")]
 public class CategoryController : ControllerBase
 {
     private readonly IService<Category> _service;
