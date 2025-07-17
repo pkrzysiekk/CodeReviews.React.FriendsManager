@@ -1,9 +1,10 @@
 using FriendsAPI.Models;
 using FriendsAPI.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FriendsAPI.Service;
 
-public class CategoryService : ICategoryService
+public class CategoryService : IService<Category>
 {
     private readonly IRepository<Category> _repository;
 
@@ -12,27 +13,32 @@ public class CategoryService : ICategoryService
        _repository = repository; 
     }
     
-    public IQueryable<Category> GetAllCategories()
+    public  async Task<IEnumerable<Category>> GetPagedEntities(int pageNumber, int pageSize)
     {
-        return _repository.GetAll();     
+        var pagedResult = await _repository
+            .GetAll()
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        return pagedResult;
     }
 
-    public async Task<Category?> GetCategoryById(int id)
+    public async Task<Category?> GetEntityById(int id)
     {
         return await _repository.GetById(id);
     }
 
-    public async Task AddCategory(Category category)
+    public async Task AddEntity(Category category)
     {
         await _repository.Create(category);
     }
 
-    public async Task UpdateCategory(Category category)
+    public async Task UpdateEntity(Category category)
     {
         await _repository.Update(category);
     }
 
-    public async Task DeleteCategory(int id)
+    public async Task DeleteEntity(int id)
     {
         await _repository.Delete(id);
     }
