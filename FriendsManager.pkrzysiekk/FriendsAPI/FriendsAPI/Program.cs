@@ -4,12 +4,24 @@ using FriendsAPI.Repository;
 using FriendsAPI.Service;
 
 var builder = WebApplication.CreateBuilder(args);
+var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddDbContext<FriendsContext>();
+//Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy  =>
+        {
+            policy.WithOrigins("http://localhost:5173/")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 //DI
 builder.Services.AddScoped<IRepository<Friend>, FriendsRepository>();
@@ -28,8 +40,6 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
