@@ -476,3 +476,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 FriendsManager.pkrzysiekk/FriendsAPI/FriendsAPI/friends.db
+FriendsManager.pkrzysiekk/FriendsAPI/FriendsAPI/friends.db-shm
+FriendsManager.pkrzysiekk/FriendsAPI/FriendsAPI/friends.db-wal
