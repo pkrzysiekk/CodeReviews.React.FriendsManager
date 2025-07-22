@@ -1,4 +1,3 @@
-import { buildCreateApi } from "@reduxjs/toolkit/query";
 import type { RootState } from "../../app/store";
 import type { category } from "../../types/category";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
@@ -47,26 +46,25 @@ export const fetchCategoriesAsync = createAsyncThunk<
   return data;
 });
 
-export const addCategoryAsync = createAsyncThunk<
-  void,
-  { category: category },
-  { state: RootState }
->("categories/add", async ({ category }, thunkAPI) => {
-  try {
-    const response = await fetch("http://localhost:5026/Category", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(category),
-    });
-    if (!response.ok) {
-      return thunkAPI.rejectWithValue("Network error or incorrect data");
+export const addCategoryAsync = createAsyncThunk<void, { category: category }>(
+  "categories/add",
+  async ({ category }, thunkAPI) => {
+    try {
+      const response = await fetch("http://localhost:5026/Category", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(category),
+      });
+      if (!response.ok) {
+        return thunkAPI.rejectWithValue("Network error or incorrect data");
+      }
+    } catch {
+      return thunkAPI.rejectWithValue("Error while adding");
     }
-  } catch {
-    return thunkAPI.rejectWithValue("Error while adding");
   }
-});
+);
 
 export const updateCategoryAsync = createAsyncThunk<
   void,
@@ -100,7 +98,6 @@ export const deleteCategoryAsync = createAsyncThunk<
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(categoryId),
       }
     );
     if (!response.ok) {
