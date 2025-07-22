@@ -15,9 +15,9 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Category>>> GetPagedEntities(int pageSize, int pageNumber)
+    public async Task<ActionResult<IEnumerable<Category>>> GetPagedEntities ( [FromQuery]int pageNumber, [FromQuery] int pageSize)
     {
-        var pagedResult = await _service.GetPagedEntities(pageSize, pageNumber);
+        var pagedResult = await _service.GetPagedEntities(pageNumber, pageSize);
         return Ok(pagedResult);
     }
 
