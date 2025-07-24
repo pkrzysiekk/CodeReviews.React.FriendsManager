@@ -2,7 +2,9 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { friend } from "../../types/friend";
 import type { RootState } from "../../app/store";
 
-export const selectFriends = (state: RootState) => state.categories.categories;
+export const selectFriends = (state: RootState) => state.friends.friends;
+
+const API_URL = "http://localhost:5026/Friends";
 
 export interface friendsState {
   friends: friend[];
@@ -37,7 +39,7 @@ export const fetchFriendAsync = createAsyncThunk<
   { pageSize: Number; pageNumber: Number }
 >("friends/fetch", async ({ pageSize, pageNumber }, thunkAPI) => {
   const response = await fetch(
-    `http://localhost:5026/Friend?pageSize=${pageSize}&pageNumber=${pageNumber}`
+    `${API_URL}?pageSize=${pageSize}&pageNumber=${pageNumber}`
   );
   if (!response.ok) {
     return thunkAPI.rejectWithValue("Error while fetching");
@@ -50,7 +52,7 @@ export const addFriendAsync = createAsyncThunk<void, { friend: friend }>(
   "friends/add",
   async ({ friend }, thunkAPI) => {
     try {
-      const response = await fetch("http://localhost:5026/Friend", {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +72,7 @@ export const updateFriendAsync = createAsyncThunk<void, { friend: friend }>(
   "friends/update",
   async ({ friend }, thunkAPI) => {
     try {
-      const response = await fetch("http://localhost:5026/Friend", {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +92,7 @@ export const deleteFriendAsync = createAsyncThunk<void, { friendId: Number }>(
   "friends/delete",
   async ({ friendId }, thunkAPI) => {
     try {
-      const response = await fetch(`http://localhost:5026/Friend/${friendId}`, {
+      const response = await fetch(`${API_URL}/${friendId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
