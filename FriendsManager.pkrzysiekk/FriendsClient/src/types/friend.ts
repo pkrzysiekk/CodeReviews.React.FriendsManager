@@ -1,8 +1,8 @@
 export type friend = {
-  id?: Number;
-  categoryId?: Number;
-  name: String;
-  lastContactDate: Date;
-  lastContactType: String;
+  id?: number;
+  categoryId?: number;
+  name: string;
+  lastContactDate: string;
+  lastContactType: string;
   desiredContactFrequency: string;
 };
