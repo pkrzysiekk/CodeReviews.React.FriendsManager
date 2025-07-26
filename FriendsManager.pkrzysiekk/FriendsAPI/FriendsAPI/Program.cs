@@ -1,5 +1,6 @@
 using FriendsAPI.Data;
 using FriendsAPI.Models;
+using FriendsAPI.Models.DTO;
 using FriendsAPI.Repository;
 using FriendsAPI.Service;
 
@@ -25,7 +26,7 @@ builder.Services.AddCors(options =>
 
 //DI
 builder.Services.AddScoped<IRepository<Friend>, FriendsRepository>();
-builder.Services.AddScoped<IService<Friend>, FriendService>();
+builder.Services.AddScoped<IService<FriendDTO>, FriendService>();
 
 builder.Services.AddScoped<IRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IService<Category>, CategoryService>();

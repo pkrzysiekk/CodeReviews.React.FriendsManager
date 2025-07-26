@@ -1,4 +1,5 @@
 using FriendsAPI.Models;
+using FriendsAPI.Models.DTO;
 using FriendsAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,9 +9,9 @@ namespace FriendsAPI.Controllers;
 [Route("[controller]")]
 public class FriendsController : ControllerBase
 {
-    private readonly IService<Friend> _service;
+    private readonly IService<FriendDTO> _service;
 
-    public FriendsController(IService<Friend> service)
+    public FriendsController(IService<FriendDTO> service)
     {
         _service = service;
     }
@@ -32,7 +33,7 @@ public class FriendsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateEntity([FromBody] Friend friend)
+    public async Task<ActionResult> CreateEntity([FromBody] FriendDTO friend)
     {
         try
         {
@@ -46,7 +47,7 @@ public class FriendsController : ControllerBase
     }
 
     [HttpPatch]
-    public async Task<ActionResult<Friend>> UpdateEntity([FromBody] Friend friend)
+    public async Task<ActionResult<Friend>> UpdateEntity([FromBody] FriendDTO friend)
     {
         try
         {
