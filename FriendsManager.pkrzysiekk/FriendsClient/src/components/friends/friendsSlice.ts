@@ -73,7 +73,7 @@ export const updateFriendAsync = createAsyncThunk<void, { friend: friend }>(
   async ({ friend }, thunkAPI) => {
     try {
       const response = await fetch(API_URL, {
-        method: "POST",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
