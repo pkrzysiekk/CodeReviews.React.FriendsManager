@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/store";
 import type { friend } from "../../types/friend";
 import {
+  addFriendAsync,
   deleteFriendAsync,
   fetchFriendAsync,
   selectFriends,
@@ -12,6 +13,7 @@ import {
   fetchCategoriesAsync,
   selectCategories,
 } from "../categories/categoriesSlice";
+import { useSelector } from "react-redux";
 
 function FriendsComponent() {
   const dispatch = useAppDispatch();
@@ -20,7 +22,8 @@ function FriendsComponent() {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [updateComponentVisible, setUpdateComponentVisible] = useState(false);
-  const [friendToUpdate, setFriendToUpdate] = useState<null | friend>(null);
+  const [addComponentVisible, setAddComponentVisible] = useState(false);
+  const [friendToModify, setFriendToModify] = useState<null | friend>(null);
 
   useEffect(() => {
     dispatch(fetchFriendAsync({ pageNumber: pageNumber, pageSize: pageSize }));
@@ -55,8 +58,14 @@ function FriendsComponent() {
   };
 
   const handleUpdateButtonClick = (friend: friend) => {
-    setFriendToUpdate(friend);
+    setFriendToModify(friend);
     setUpdateComponentVisible(true);
+    setAddComponentVisible(false);
+  };
+
+  const handleAddButtonClick = () => {
+    setUpdateComponentVisible(false);
+    setAddComponentVisible(true);
   };
 
   const handleUpdateFormSubmit = async (
@@ -70,6 +79,17 @@ function FriendsComponent() {
     setUpdateComponentVisible(false);
   };
 
+  const handleAddFormSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    updatedFriend: friend
+  ) => {
+    e.preventDefault();
+
+    await dispatch(addFriendAsync({ friend: updatedFriend }));
+    await dispatch(fetchFriendAsync({ pageNumber, pageSize }));
+    setAddComponentVisible(false);
+  };
+
   return (
     <div className="friends-container offset-3 col-6">
       <FriendsTable
@@ -80,13 +100,20 @@ function FriendsComponent() {
       <TableNavButtons
         handleNextButtonClick={handleNextButtonClick}
         handlePrevButtonClick={handlePrevButtonClick}
+        handleAddButtonClick={handleAddButtonClick}
       />
-      {updateComponentVisible && friendToUpdate ? (
+      {updateComponentVisible && friendToModify ? (
         <UpdateComponent
-          friend={friendToUpdate}
+          friend={friendToModify}
           categories={categories}
           handleUpdateFormSubmit={handleUpdateFormSubmit}
         />
+      ) : (
+        ""
+      )}
+
+      {addComponentVisible ? (
+        <AddComponent handleAddFormSubmit={handleAddFormSubmit} />
       ) : (
         ""
       )}
@@ -149,14 +176,24 @@ interface friendsTableProps {
 interface TableNavProps {
   handlePrevButtonClick: () => void;
   handleNextButtonClick: () => void;
+  handleAddButtonClick: () => void;
 }
 
 function TableNavButtons({
   handlePrevButtonClick,
   handleNextButtonClick,
+  handleAddButtonClick,
 }: TableNavProps) {
   return (
     <div className="d-flex justify-content-end">
+      <div>
+        <button
+          onClick={handleAddButtonClick}
+          className="btn btn-success me-3 "
+        >
+          Add
+        </button>
+      </div>
       <div className="table-buttons btn-group">
         <button
           className="btn btn-outline-primary"
@@ -194,10 +231,17 @@ function ActionsDropdown({
       </button>
       <ul className="dropdown-menu text-center">
         <li>
-          <button onClick={handleDeleteButtonClick}>Delete</button>
+          <button className="btn btn-danger" onClick={handleDeleteButtonClick}>
+            Delete
+          </button>
         </li>
         <li>
-          <button onClick={handleUpdateButtonClick}>Update</button>
+          <button
+            className="btn btn-info mt-2"
+            onClick={handleUpdateButtonClick}
+          >
+            Update
+          </button>
         </li>
       </ul>
     </div>
@@ -266,16 +310,6 @@ function UpdateComponent({
               placeholder="Enter desired contact frequency (weekly)"
               name="desiredContactFrequency"
               value={updatedFriend.desiredContactFrequency}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="col">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter category"
-              name="categoryName"
-              value={updatedFriend.categoryName}
               onChange={handleInputChange}
             />
           </div>
@@ -426,6 +460,106 @@ function CategorySelectDropdown({
       />
       <input type="hidden" value={categoryId} name="categoryId" />
     </>
+  );
+}
+interface AddComponentProps {
+  handleAddFormSubmit: (
+    e: React.FormEvent<HTMLFormElement>,
+    friend: friend
+  ) => Promise<void>;
+}
+function AddComponent({ handleAddFormSubmit }: AddComponentProps) {
+  const emptyFriend: friend = {
+    name: "",
+    lastContactDate: "",
+    lastContactType: "",
+    desiredContactFrequency: "",
+    categoryName: "",
+  };
+
+  const [updatedFriend, setUpdatedFriend] = useState(emptyFriend);
+  const categories = useAppSelector(selectCategories);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type } = e.target;
+    setUpdatedFriend((prev) => ({
+      ...prev,
+      [name]: type === "number" ? Number(value) : value,
+    }));
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await handleAddFormSubmit(e, updatedFriend);
+  };
+  return (
+    <div className="alert alert-success mt-3 mb-5">
+      <form onSubmit={handleFormSubmit}>
+        <div className="row pb-2">
+          <div className="col">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter Name"
+              name="name"
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="col">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter last contact type"
+              name="lastContactType"
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <div className="row pb-3">
+          <div className="col">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter desired contact frequency (weekly)"
+              name="desiredContactFrequency"
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <div className="row pb-3">
+          <div className="col">
+            <input
+              type="datetime-local"
+              className="form-control"
+              name="lastContactDate"
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <div className="row pb-3">
+          <div className="col mt-3 mb-3">
+            <CategorySelectDropdown
+              categories={categories}
+              onCategoryChange={(name, id) =>
+                setUpdatedFriend((prev) => ({
+                  ...prev,
+                  categoryName: name,
+                  categoryId: id,
+                }))
+              }
+            />
+            <button
+              className="form-control btn btn-secondary hover-shadow"
+              type="submit"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }
 
