@@ -13,7 +13,6 @@ import {
   fetchCategoriesAsync,
   selectCategories,
 } from "../categories/categoriesSlice";
-import { useSelector } from "react-redux";
 
 function FriendsComponent() {
   const dispatch = useAppDispatch();
@@ -185,7 +184,7 @@ function TableNavButtons({
   handleAddButtonClick,
 }: TableNavProps) {
   return (
-    <div className="d-flex justify-content-end">
+    <div className="d-flex justify-content-end mb-5">
       <div>
         <button
           onClick={handleAddButtonClick}
