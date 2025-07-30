@@ -37,7 +37,14 @@ function CategoriesComponent() {
       );
     }
   };
-
+  const incrementPageSizeIfNeeded = () => {
+    if (pageSize == categories.length) {
+      const newPageNumber = pageNumber + 1;
+      dispatch(
+        fetchCategoriesAsync({ pageNumber: newPageNumber, pageSize: pageSize })
+      );
+    }
+  };
   const handleNextButtonClick = () => {
     if (categories.length == pageSize) {
       const newPageNumber = pageNumber + 1;
@@ -55,10 +62,11 @@ function CategoriesComponent() {
     e.preventDefault();
 
     await dispatch(addCategoryAsync({ category: category }));
-    dispatch(
+    await dispatch(
       fetchCategoriesAsync({ pageNumber: pageNumber, pageSize: pageSize })
     );
     setIsAddComponentVisible(false);
+    incrementPageSizeIfNeeded();
   };
 
   const handleAddButtonClick = () => {

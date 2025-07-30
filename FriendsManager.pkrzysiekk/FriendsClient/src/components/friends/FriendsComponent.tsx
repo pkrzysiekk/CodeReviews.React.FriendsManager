@@ -76,6 +76,7 @@ function FriendsComponent() {
     await dispatch(updateFriendAsync({ friend: updatedFriend }));
     await dispatch(fetchFriendAsync({ pageNumber, pageSize }));
     setUpdateComponentVisible(false);
+    incrementPageSizeIfNeeded();
   };
 
   const handleAddFormSubmit = async (
@@ -88,7 +89,14 @@ function FriendsComponent() {
     await dispatch(fetchFriendAsync({ pageNumber, pageSize }));
     setAddComponentVisible(false);
   };
-
+  const incrementPageSizeIfNeeded = () => {
+    if (pageSize == friends.length) {
+      const newPageNumber = pageNumber + 1;
+      dispatch(
+        fetchFriendAsync({ pageNumber: newPageNumber, pageSize: pageSize })
+      );
+    }
+  };
   return (
     <div className="friends-container offset-3 col-6">
       <FriendsTable
