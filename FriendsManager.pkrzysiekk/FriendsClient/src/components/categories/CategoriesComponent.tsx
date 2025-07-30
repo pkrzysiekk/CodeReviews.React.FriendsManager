@@ -13,6 +13,7 @@ function CategoriesComponent() {
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const categories = useAppSelector(selectCategories);
+  const [isAddComponentVisible, setIsAddComponentVisible] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -27,13 +28,58 @@ function CategoriesComponent() {
       fetchCategoriesAsync({ pageSize: pageSize, pageNumber: pageNumber })
     );
   };
+  const handlePrevButtonClick = () => {
+    if (pageNumber > 1) {
+      const newPageNumber = pageNumber - 1;
+      setPageNumber(newPageNumber);
+      dispatch(
+        fetchCategoriesAsync({ pageNumber: newPageNumber, pageSize: pageSize })
+      );
+    }
+  };
 
+  const handleNextButtonClick = () => {
+    if (categories.length == pageSize) {
+      const newPageNumber = pageNumber + 1;
+      setPageNumber(newPageNumber);
+      dispatch(
+        fetchCategoriesAsync({ pageNumber: newPageNumber, pageSize: pageSize })
+      );
+    }
+  };
+
+  const handleAddFormSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    category: category
+  ) => {
+    e.preventDefault();
+
+    await dispatch(addCategoryAsync({ category: category }));
+    dispatch(
+      fetchCategoriesAsync({ pageNumber: pageNumber, pageSize: pageSize })
+    );
+    setIsAddComponentVisible(false);
+  };
+
+  const handleAddButtonClick = () => {
+    setIsAddComponentVisible(true);
+  };
   return (
     <div className="categories-container offset-3 col-6 h-75">
       <CategoriesTable
         categories={categories}
         handleDeleteButtonCLick={handleDeleteButtonClick}
       />
+      <TableNav
+        handlePrevButtonClick={handlePrevButtonClick}
+        handleNextButtonClick={handleNextButtonClick}
+        handleAddButtonClick={handleAddButtonClick}
+      />
+      {isAddComponentVisible ? (
+        <AddComponent handleAddFormSubmit={handleAddFormSubmit} />
+      ) : (
+        ""
+      )}
     </div>
   );
 }
@@ -81,4 +127,83 @@ function CategoriesTable({
   );
 }
 
+interface TableNavProps {
+  handlePrevButtonClick: () => void;
+  handleNextButtonClick: () => void;
+  handleAddButtonClick: () => void;
+}
+function TableNav({
+  handleNextButtonClick,
+  handlePrevButtonClick,
+  handleAddButtonClick,
+}: TableNavProps) {
+  return (
+    <div className="table-buttons d-flex justify-content-end">
+      <button onClick={handleAddButtonClick} className="btn btn-success me-3">
+        Add
+      </button>
+
+      <div className="btn-group ">
+        <button
+          className="btn btn-outline-primary"
+          onClick={handlePrevButtonClick}
+        >
+          Prev
+        </button>
+        <button
+          className="btn btn-outline-primary"
+          onClick={handleNextButtonClick}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
+interface AddComponentProps {
+  handleAddFormSubmit: (
+    e: React.FormEvent<HTMLFormElement>,
+    category: category
+  ) => Promise<void>;
+}
+function AddComponent({ handleAddFormSubmit }: AddComponentProps) {
+  const initialCategory: category = {
+    name: "",
+  };
+  const [categoryToAdd, setCategoryToAdd] = useState(initialCategory);
+  const onCategoryNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setCategoryToAdd((prev) => ({
+      ...prev,
+      name: value,
+    }));
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await handleAddFormSubmit(e, categoryToAdd);
+  };
+
+  return (
+    <div className="alert alert-success mt-3 mb-5">
+      <form onSubmit={handleFormSubmit}>
+        <div className="col">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter category name"
+            name="name"
+            onChange={onCategoryNameChange}
+          />
+          <button
+            type="submit"
+            className="form-control btn btn-secondary hover-shadow"
+          >
+            Add
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
 export default CategoriesComponent;
