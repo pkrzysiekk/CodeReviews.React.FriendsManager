@@ -10,6 +10,7 @@ import {
   Routes,
 } from "react-router-dom";
 import Navbar from "./components/navbar/Navbar";
+import Footer from "./components/footer/Footer";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/friends" element={<FriendsComponent />} />
         <Route path="/categories" element={<CategoriesComponent />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }
