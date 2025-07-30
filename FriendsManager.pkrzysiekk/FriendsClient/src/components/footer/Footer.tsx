@@ -1,6 +1,6 @@
 function Footer() {
   return (
-    <nav className="navbar navbar-expand-sm bg-dark navbar-dark text">
+    <nav className="navbar navbar-expand-sm bg-dark navbar-dark text ">
       <div className="container-fluid justify-content-center">
         <a
           target="blank"
