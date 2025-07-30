@@ -21,22 +21,46 @@ function CategoriesComponent() {
     );
   }, []);
 
+  const handleDeleteButtonClick = async (id: number) => {
+    await dispatch(deleteCategoryAsync({ categoryId: id }));
+    dispatch(
+      fetchCategoriesAsync({ pageSize: pageSize, pageNumber: pageNumber })
+    );
+  };
+
   return (
     <div className="categories-container offset-3 col-6 h-75">
-      <CategoriesTable categories={categories} />
+      <CategoriesTable
+        categories={categories}
+        handleDeleteButtonCLick={handleDeleteButtonClick}
+      />
     </div>
   );
 }
 
 interface CategoriesTableProps {
   categories: category[];
+  handleDeleteButtonCLick: (id: number) => Promise<void>;
 }
-function CategoriesTable({ categories }: CategoriesTableProps) {
+function CategoriesTable({
+  categories,
+  handleDeleteButtonCLick,
+}: CategoriesTableProps) {
   const tableContent = categories.map((cat, index) => {
     return (
       <tr key={cat.id}>
         <td>{index + 1}</td>
         <td>{cat.name}</td>
+        <td>
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              handleDeleteButtonCLick(cat.id as number);
+            }}
+          >
+            X
+          </button>
+        </td>
       </tr>
     );
   });
@@ -48,6 +72,7 @@ function CategoriesTable({ categories }: CategoriesTableProps) {
           <tr>
             <th>Number</th>
             <th>Category Name</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>{tableContent}</tbody>
