@@ -3,6 +3,7 @@ import type { friend } from "../../types/friend";
 import type { RootState } from "../../app/store";
 
 export const selectFriends = (state: RootState) => state.friends.friends;
+export const selectFriendsStatus = (state: RootState) => state.friends.status;
 
 const API_URL = "http://localhost:5026/Friends";
 

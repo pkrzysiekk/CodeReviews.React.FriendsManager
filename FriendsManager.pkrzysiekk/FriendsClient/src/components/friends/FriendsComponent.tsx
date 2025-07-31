@@ -6,6 +6,7 @@ import {
   deleteFriendAsync,
   fetchFriendAsync,
   selectFriends,
+  selectFriendsStatus,
   updateFriendAsync,
 } from "./friendsSlice";
 import type { category } from "../../types/category";
@@ -13,20 +14,29 @@ import {
   fetchCategoriesAsync,
   selectCategories,
 } from "../categories/categoriesSlice";
+import LoadingComponent from "../LoadingComponent/LoadingComponent";
 
 function FriendsComponent() {
   const dispatch = useAppDispatch();
   const friends = useAppSelector(selectFriends);
   const categories = useAppSelector(selectCategories);
+  const friendsStatus = useAppSelector(selectFriendsStatus);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [updateComponentVisible, setUpdateComponentVisible] = useState(false);
   const [addComponentVisible, setAddComponentVisible] = useState(false);
   const [friendToModify, setFriendToModify] = useState<null | friend>(null);
+  const [isTableLoading, setIsTableLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchFriendAsync({ pageNumber: pageNumber, pageSize: pageSize }));
-    dispatch(fetchCategoriesAsync({ pageNumber: 1, pageSize: 4 }));
+    const loadData = async () => {
+      await dispatch(
+        fetchFriendAsync({ pageNumber: pageNumber, pageSize: pageSize })
+      );
+      await dispatch(fetchCategoriesAsync({ pageNumber: 1, pageSize: 4 }));
+      setIsTableLoading(false);
+    };
+    loadData();
   }, []);
 
   const handlePrevButtonClick = () => {
@@ -99,16 +109,23 @@ function FriendsComponent() {
   };
   return (
     <div className="friends-container offset-3 col-6">
-      <FriendsTable
-        friends={friends}
-        handleDeleteButtonClick={handleDeleteButtonClick}
-        handleUpdateButtonClick={handleUpdateButtonClick}
-      />
-      <TableNavButtons
-        handleNextButtonClick={handleNextButtonClick}
-        handlePrevButtonClick={handlePrevButtonClick}
-        handleAddButtonClick={handleAddButtonClick}
-      />
+      {isTableLoading ? (
+        <LoadingComponent />
+      ) : (
+        <>
+          {" "}
+          <FriendsTable
+            friends={friends}
+            handleDeleteButtonClick={handleDeleteButtonClick}
+            handleUpdateButtonClick={handleUpdateButtonClick}
+          />
+          <TableNavButtons
+            handleNextButtonClick={handleNextButtonClick}
+            handlePrevButtonClick={handlePrevButtonClick}
+            handleAddButtonClick={handleAddButtonClick}
+          />
+        </>
+      )}
       {updateComponentVisible && friendToModify ? (
         <UpdateComponent
           friend={friendToModify}
