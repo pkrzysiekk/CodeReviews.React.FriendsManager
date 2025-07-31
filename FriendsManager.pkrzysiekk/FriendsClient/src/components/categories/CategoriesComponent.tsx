@@ -8,25 +8,33 @@ import {
   updateCategoryAsync,
 } from "./categoriesSlice";
 import type { category } from "../../types/category";
+import LoadingComponent from "../LoadingComponent/LoadingComponent";
 
 function CategoriesComponent() {
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const categories = useAppSelector(selectCategories);
   const [isAddComponentVisible, setIsAddComponentVisible] = useState(false);
+  const [isTableLoading, setIsTableLoading] = useState(true);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(
-      fetchCategoriesAsync({ pageNumber: pageNumber, pageSize: pageSize })
-    );
+    const loadData = async () => {
+      await dispatch(
+        fetchCategoriesAsync({ pageNumber: pageNumber, pageSize: pageSize })
+      );
+      setIsTableLoading(false);
+    };
+    loadData();
   }, []);
 
   const handleDeleteButtonClick = async (id: number) => {
     await dispatch(deleteCategoryAsync({ categoryId: id }));
-    dispatch(
+    setIsTableLoading(true);
+    await dispatch(
       fetchCategoriesAsync({ pageSize: pageSize, pageNumber: pageNumber })
     );
+    setIsTableLoading(false);
   };
   const handlePrevButtonClick = () => {
     if (pageNumber > 1) {
@@ -62,9 +70,11 @@ function CategoriesComponent() {
     e.preventDefault();
 
     await dispatch(addCategoryAsync({ category: category }));
+    setIsTableLoading(true);
     await dispatch(
       fetchCategoriesAsync({ pageNumber: pageNumber, pageSize: pageSize })
     );
+    setIsTableLoading(false);
     setIsAddComponentVisible(false);
     incrementPageSizeIfNeeded();
   };
@@ -74,15 +84,22 @@ function CategoriesComponent() {
   };
   return (
     <div className="categories-container offset-3 col-6 h-75">
-      <CategoriesTable
-        categories={categories}
-        handleDeleteButtonCLick={handleDeleteButtonClick}
-      />
-      <TableNav
-        handlePrevButtonClick={handlePrevButtonClick}
-        handleNextButtonClick={handleNextButtonClick}
-        handleAddButtonClick={handleAddButtonClick}
-      />
+      {isTableLoading ? (
+        <LoadingComponent />
+      ) : (
+        <>
+          {" "}
+          <CategoriesTable
+            categories={categories}
+            handleDeleteButtonCLick={handleDeleteButtonClick}
+          />
+          <TableNav
+            handlePrevButtonClick={handlePrevButtonClick}
+            handleNextButtonClick={handleNextButtonClick}
+            handleAddButtonClick={handleAddButtonClick}
+          />
+        </>
+      )}
       {isAddComponentVisible ? (
         <AddComponent handleAddFormSubmit={handleAddFormSubmit} />
       ) : (

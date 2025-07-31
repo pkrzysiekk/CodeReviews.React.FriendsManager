@@ -61,9 +61,11 @@ function FriendsComponent() {
 
   const handleDeleteButtonClick = async (id: number) => {
     await dispatch(deleteFriendAsync({ friendId: id }));
+    setIsTableLoading(true);
     await dispatch(
       fetchFriendAsync({ pageNumber: pageNumber, pageSize: pageSize })
     );
+    setIsTableLoading(false);
   };
 
   const handleUpdateButtonClick = (friend: friend) => {
@@ -84,7 +86,9 @@ function FriendsComponent() {
     e.preventDefault();
 
     await dispatch(updateFriendAsync({ friend: updatedFriend }));
+    setIsTableLoading(true);
     await dispatch(fetchFriendAsync({ pageNumber, pageSize }));
+    setIsTableLoading(false);
     setUpdateComponentVisible(false);
     incrementPageSizeIfNeeded();
   };
