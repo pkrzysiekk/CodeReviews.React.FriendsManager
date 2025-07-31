@@ -8,7 +8,7 @@ public class FriendDTO
     public string Name { get; set; }
     public DateTime LastContactDate { get; set; }
     public string LastContactType {get; set;}
-    public string DesiredContactFrequency {get; set;}
+    public int DesiredContactFrequency {get; set;}
 
     public static Friend ToBO(FriendDTO friendDTO)
     {

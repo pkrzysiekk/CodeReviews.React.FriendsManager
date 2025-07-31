@@ -9,7 +9,7 @@ public class Friend
     public string Name { get; set; }
     public DateTime LastContactDate { get; set; }
     public string LastContactType {get; set;}
-    public string DesiredContactFrequency {get; set;}
+    public int DesiredContactFrequency {get; set;}
     
     [JsonIgnore]
     public Category? Category {get; set;}
