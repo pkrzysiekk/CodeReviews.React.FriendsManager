@@ -154,11 +154,38 @@ function FriendsTable({
   handleDeleteButtonClick,
   handleUpdateButtonClick,
 }: friendsTableProps) {
+  const shouldContactPerson = (
+    lastContactDate: Date,
+    contactsPerWeek: number
+  ): boolean => {
+    if (contactsPerWeek <= 0) return false;
+
+    const daysBetweenContacts = Math.floor(7 / contactsPerWeek);
+
+    const nextContactDate = new Date(lastContactDate);
+    nextContactDate.setDate(nextContactDate.getDate() + daysBetweenContacts);
+
+    const today = new Date();
+
+    return today >= nextContactDate;
+  };
+
   const tableContent = friends.map((f) => {
     return (
       <tr key={f.id}>
         <td>{f.name}</td>
-        <td>{new Date(f.lastContactDate).toUTCString()}</td>
+        <td
+          className={
+            shouldContactPerson(
+              new Date(f.lastContactDate),
+              parseInt(f.desiredContactFrequency)
+            )
+              ? "text-danger"
+              : ""
+          }
+        >
+          {new Date(f.lastContactDate).toUTCString()}
+        </td>
         <td>{f.lastContactType}</td>
         <td>{f.desiredContactFrequency}</td>
         <td>{f.categoryName}</td>
